@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-app: #080402;
+    --bg-surface: #0f0a07;
+    --bg-card: rgba(15, 23, 42, 0.7);
+    --bg-card-solid: #0d0805;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-brand: rgba(249, 115, 22, 0.3);
+    --vignette-color: #080402;
+  }
+
+  html.light {
+    --bg-app: #faf5ee;
+    --bg-surface: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.94);
+    --bg-card-solid: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #334155;
+    --border-subtle: rgba(0, 0, 0, 0.1);
+    --border-brand: rgba(249, 115, 22, 0.4);
+    --vignette-color: #faf5ee;
+  }
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0c0704;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #26160e;
+  border-radius: 4px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+/* 80mm Thermal Receipt Print Styles */
+@media print {
+  /* Hide the rest of the app including navbar, dashboard, buttons, etc. */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Only display the printable receipt container and its children */
+  #printable-receipt-area, #printable-receipt-area * {
+    visibility: visible;
+  }
+
+  #printable-receipt-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 2mm !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+  }
+
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+}

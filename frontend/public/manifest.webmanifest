@@ -1,0 +1,41 @@
+{
+  "name": "Apurva Pizza Hub",
+  "short_name": "Apurva Pizza",
+  "description": "Authentic stone-oven artisanal pizzas, gourmet sides, and rapid delivery in Deoria.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#ea580c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "ordering", "restaurant"],
+  "shortcuts": [
+    {
+      "name": "Order Pizza",
+      "short_name": "Menu",
+      "description": "Browse pizza menu & order now",
+      "url": "/",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Order",
+      "short_name": "Track",
+      "description": "Track active delivery",
+      "url": "/profile",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: apurva-mongodb
+    restart: always
+    # Security: Database is internal to container network ONLY; not exposed publicly
+    expose:
+      - "27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - apurva-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: apurva-backend
+    restart: always
+    # Security: Internal to network only; all external UI calls flow through Nginx reverse proxy
+    expose:
+      - "5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/apurva_pizza_hub
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - NODE_ENV=production
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - ADMIN_URL=${ADMIN_URL:-http://localhost:3001}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3001}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_PHONE=${ADMIN_PHONE}
+      - KITCHEN_USERNAME=${KITCHEN_USERNAME}
+      - KITCHEN_PASSWORD=${KITCHEN_PASSWORD}
+      - DRIVER_USERNAME=${DRIVER_USERNAME}
+      - DRIVER_PASSWORD=${DRIVER_PASSWORD}
+      - FAST2SMS_API_KEY=${FAST2SMS_API_KEY}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+    volumes:
+      - backend-uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - apurva-network
+
+  customer-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: apurva-customer-frontend
+    restart: always
+    # Serves Customer Storefront & Reverse Proxies /api and /socket.io to backend
+    ports:
+      - "${PORT_FRONTEND:-5173}:80"
+    depends_on:
+      - backend
+    networks:
+      - apurva-network
+
+  admin-frontend:
+    build:
+      context: ./admin-frontend
+      dockerfile: Dockerfile
+    container_name: apurva-admin-kds-frontend
+    restart: always
+    # Serves Admin / Kitchen KDS & Reverse Proxies /api and /socket.io to backend
+    ports:
+      - "${PORT_ADMIN:-3001}:80"
+    depends_on:
+      - backend
+    networks:
+      - apurva-network
+
+volumes:
+  mongo-data:
+  backend-uploads:
+
+networks:
+  apurva-network:
+    driver: bridge

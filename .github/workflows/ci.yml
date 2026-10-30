@@ -1,0 +1,85 @@
+name: Production CI/CD Pipeline & Security Audit
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  security-audit:
+    name: Automated Security Audit & Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: cd backend && npm install --no-audit
+
+      - name: Run Security Audit Test Suite
+        run: node scripts/security-audit.js
+
+  build-customer-storefront:
+    name: Build & Verify Customer Storefront
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: cd frontend && npm install
+
+      - name: Build Customer Frontend Bundle
+        run: cd frontend && npm run build
+        env:
+          VITE_API_URL: /api
+          VITE_SOCKET_URL: ''
+
+  build-admin-kds-portal:
+    name: Build & Verify Admin & Kitchen Portal
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: admin-frontend/package-lock.json
+
+      - name: Install Admin Dependencies
+        run: cd admin-frontend && npm install
+
+      - name: Build Admin Frontend Bundle
+        run: cd admin-frontend && npm run build
+        env:
+          VITE_API_URL: /api
+          VITE_SOCKET_URL: ''
+
+  docker-compose-validate:
+    name: Validate Docker Compose Architecture
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Config
+        run: |
+          docker compose config --dry-run || docker-compose config

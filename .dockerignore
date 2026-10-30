@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.env.*
+.git
+.gitignore
+*.key
+*.crt
+*.md
+TEST_CREDENTIALS.txt
+.DS_Store
